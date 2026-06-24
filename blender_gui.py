@@ -148,12 +148,33 @@ class GUI_OT_modal(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
 
+def _find_view3d_window_region():
+    """3D Viewport の (window, area, region) を1つ探して返す。見つからなければ None。"""
+    for window in bpy.context.window_manager.windows:
+        for area in window.screen.areas:
+            if area.type == 'VIEW_3D':
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        return window, area, region
+    return None
+
+
 def register():
     global _draw_handler
     bpy.utils.register_class(GUI_OT_modal)
     _draw_handler = bpy.types.SpaceView3D.draw_handler_add(
         _draw_callback, (), 'WINDOW', 'POST_PIXEL')
-    bpy.ops.gui.modal_input('INVOKE_DEFAULT')
+
+    # テキストエディタ／コンソールから実行した場合、そのままだとコンテキストが
+    # 3D Viewport にアンカーされず、モーダルのマウス座標がズレてクリックが
+    # 反応しないことがある。3D Viewport のコンテキストを明示的に指定して invoke する。
+    found = _find_view3d_window_region()
+    if found is not None:
+        window, area, region = found
+        with bpy.context.temp_override(window=window, area=area, region=region):
+            bpy.ops.gui.modal_input('INVOKE_DEFAULT')
+    else:
+        bpy.ops.gui.modal_input('INVOKE_DEFAULT')
 
 
 def unregister():
