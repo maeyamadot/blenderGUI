@@ -1,19 +1,26 @@
 """
 blender_gui.py の使用例。
 
-Blender のテキストエディタにこのファイルを開いて「実行」するか、
-Python コンソールに貼り付けて実行してください。
-このファイルと blender_gui.py は同じディレクトリに置くか、
-sys.path に blender_gui.py のあるパスを追加してください。
+【重要】Blender のテキストエディタで「実行」する場合、その Python コードは
+.blend ファイル内のテキストデータブロックとして実行されるため、
+__file__ が存在せず、自動でディレクトリを検出できません。
+そのため、下の BLENDER_GUI_DIR に blender_gui.py が置かれている
+"実際のフォルダパス" を直接書いてください。
+
+例:
+    BLENDER_GUI_DIR = r"E:\projects\experiments\blenderGUI"
+
+このパスの中に blender_gui.py が存在している必要があります。
+（このリポジトリを clone/ダウンロードしたフォルダを指定すればOK）
 """
 
 import sys
-import os
 
-# blender_gui.py が置かれているディレクトリを import パスに追加する例
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-if SCRIPT_DIR not in sys.path:
-    sys.path.append(SCRIPT_DIR)
+# ↓↓↓ ここを blender_gui.py が置かれている実際のフォルダパスに書き換える ↓↓↓
+BLENDER_GUI_DIR = r"E:\projects\experiments\blenderGUI"
+
+if BLENDER_GUI_DIR not in sys.path:
+    sys.path.append(BLENDER_GUI_DIR)
 
 import blender_gui as bgui
 
